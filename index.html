@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Тайное послание в ротанге</title>
+<meta name="description" content="Вплети слова в ротанг и отправь. Чтобы прочитать, придётся расплести.">
+<meta name="theme-color" content="#1c130d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Тебе вплели тайное послание">
+<meta property="og:description" content="Расплети пальцем, чтобы прочитать.">
+<meta property="og:url" content="https://brimtv.github.io/rotang-poslanie/">
+<meta property="og:image" content="https://brimtv.github.io/rotang-poslanie/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Cormorant+Garamond:wght@600&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+:root{
+  --bg-1:#3b2719; --bg-2:#1a110b;
+  --ink:#f3e6cf; --ink-dim:#c9b091;
+  --honey:#e0ad66; --honey-2:#f2d29a; --line:rgba(243,230,207,.2);
+  --paper-1:#fbf3e2; --paper-2:#eddcbd; --pen:#3a2312;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;min-height:100%}
+html{background:var(--bg-2)}
+body{
+  color:var(--ink);font:16px/1.4 var(--sans);overflow-x:clip;
+  background:radial-gradient(120% 75% at 50% 32%,var(--bg-1),var(--bg-2) 72%) fixed;
+  -webkit-tap-highlight-color:transparent;
+}
+.wrap{
+  width:100%;max-width:476px;margin:0 auto;min-height:100svh;
+  padding:max(18px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:16px;
+}
+.head{text-align:center}
+.eyebrow{margin:0 0 2px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--honey)}
+h1{margin:0;font:600 clamp(28px,8.2vw,40px)/1.05 "Cormorant Garamond",Georgia,serif}
+.sub{margin:8px auto 0;max-width:34ch;color:var(--ink-dim);font-size:15px;line-height:1.35}
+#snd{
+  position:fixed;z-index:5;top:max(12px,env(safe-area-inset-top));right:12px;width:40px;height:40px;
+  border-radius:50%;border:1px solid var(--line);background:rgba(26,17,11,.6);font-size:17px;cursor:pointer;padding:0;
+}
+.head,.panel,.foot{position:relative;z-index:2}
+.stage{width:100vw;margin-left:calc(50% - 50vw);padding:0 16px;overflow-x:clip;flex:none}
+.frame{
+  position:relative;width:min(100%,56svh,444px);aspect-ratio:5/6;margin:0 auto;
+}
+.frame.shake{animation:shake .36s}
+@keyframes shake{20%{transform:translateX(-7px)}45%{transform:translateX(6px)}70%{transform:translateX(-3px)}}
+.note{
+  position:absolute;inset:16px;border-radius:6px;overflow:hidden;color:var(--pen);
+  background:radial-gradient(90% 70% at 50% 40%,var(--paper-1),var(--paper-2));
+  box-shadow:inset 0 0 26px rgba(90,52,18,.35);
+  transition:transform .7s cubic-bezier(.2,.9,.3,1.2);
+}
+.note.open{transform:scale(1.015)}
+#ta{
+  display:block;width:100%;height:100%;border:0;outline:0;resize:none;background:none;color:inherit;
+  padding:22px 20px;font:500 31px/1.16 Caveat,"Segoe Print",cursive;text-align:center;
+}
+#ta::placeholder{color:rgba(58,35,18,.5)}
+#noteBody{position:absolute;inset:0;padding:18px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:Caveat,"Segoe Print",cursive;font-weight:500}
+#noteInner{width:100%;text-align:center;line-height:1.14}
+#noteText{white-space:pre-wrap;overflow-wrap:anywhere}
+#noteFrom{margin-top:.5em;text-align:right;font-weight:700;font-size:.82em;overflow-wrap:anywhere}
+#cv{position:absolute;left:-56px;top:-56px;width:calc(100% + 112px);height:calc(100% + 112px);pointer-events:none;touch-action:none}
+#cv.live{pointer-events:auto;cursor:grab}
+#ghost{
+  position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,250,235,.85),rgba(255,250,235,.22) 55%,transparent 72%);
+  animation:swipe 2.6s ease-in-out infinite;
+}
+@keyframes swipe{
+  0%{transform:translate(70px,60px);opacity:0}
+  12%{opacity:1}
+  70%{opacity:1}
+  85%,100%{transform:translate(250px,350px);opacity:0}
+}
+@media (prefers-reduced-motion:reduce){#ghost{animation:none;display:none}.frame.shake{animation:none}}
+.panel{display:flex;flex-direction:column;gap:10px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+button,.btn{font:inherit;color:inherit;cursor:pointer}
+.chip{padding:7px 13px;border-radius:99px;border:1px solid var(--line);background:none;font-size:14px;color:var(--ink)}
+.row{display:flex;gap:10px;align-items:center}
+.field{
+  flex:1;min-width:0;height:46px;padding:0 13px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(255,255,255,.06);color:var(--ink);font:16px var(--sans);
+}
+.field::placeholder{color:var(--ink-dim)}
+#count{font-size:13px;color:var(--ink-dim);white-space:nowrap}
+.btn{
+  display:flex;align-items:center;justify-content:center;min-height:50px;padding:0 18px;border-radius:12px;
+  border:1px solid var(--line);background:rgba(255,255,255,.06);text-decoration:none;font-size:16px;flex:1;
+}
+.btn.main{border:0;font-weight:700;color:#2a1808;background:linear-gradient(180deg,var(--honey-2),var(--honey))}
+button:focus-visible,a:focus-visible,.field:focus-visible{outline:2px solid var(--honey-2);outline-offset:2px}
+.hint{margin:0;text-align:center;color:var(--ink);font-size:16px}
+.ghostlink{background:none;border:0;padding:6px;color:var(--ink-dim);text-decoration:underline;font-size:14px;align-self:center}
+.foot{margin-top:auto;text-align:center;font-size:13px;color:var(--ink-dim);padding-top:4px}
+.foot a{color:inherit}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#f3e6cf;color:#2a1808;padding:9px 15px;border-radius:9px;font-size:14px;z-index:9}
+#ogPlate{display:none}
+html.og,html.og body{width:1200px;height:630px;overflow:hidden}
+html.og .head,html.og .panel,html.og .foot,html.og #snd,html.og #ghost{display:none!important}
+html.og .wrap{padding:0;max-width:none;display:block;min-height:0}
+html.og .stage{width:auto;margin:0;padding:0;overflow:visible}
+html.og .frame{position:fixed;left:0;top:0;width:1200px;height:630px;aspect-ratio:auto}
+html.og #cv{left:-56px;top:-56px}
+html.og #ogPlate{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;position:fixed;left:210px;top:175px;width:780px;height:280px;z-index:3;
+  background:radial-gradient(90% 70% at 50% 40%,var(--paper-1),var(--paper-2));color:var(--pen);border-radius:8px;
+  box-shadow:0 18px 60px rgba(20,9,2,.7);font-family:Caveat,cursive;text-align:center;
+}
+html.og #ogPlate b{font-size:84px;line-height:1;font-weight:700}
+html.og #ogPlate span{font-size:48px;margin-top:14px}
+</style>
+</head>
+<body>
+<button id="snd" type="button" aria-label="Выключить звук">🔊</button>
+<main class="wrap">
+  <header class="head">
+    <p class="eyebrow" id="eyebrow"></p>
+    <h1 id="title"></h1>
+    <p class="sub" id="sub"></p>
+  </header>
+
+  <div class="stage"><div class="frame" id="frame">
+    <div class="note" id="note">
+      <textarea id="ta" maxlength="160" aria-label="Текст послания" placeholder="Напиши здесь то, что хочешь сказать"></textarea>
+      <div id="noteBody" hidden><div id="noteInner"><div id="noteText"></div><div id="noteFrom"></div></div></div>
+    </div>
+    <canvas id="cv"></canvas>
+    <div id="ghost" hidden></div>
+  </div></div>
+  <div id="ogPlate"><b>Тебе вплели послание</b><span>расплети, чтобы прочитать</span></div>
+
+  <section class="panel" id="pWrite" hidden>
+    <div class="chips">
+      <button class="chip" type="button" data-t="С Новым годом! Пусть 2027-й обращается с тобой бережно, как с хрупкой вещью ручной работы.">С Новым годом</button>
+      <button class="chip" type="button" data-t="С днём рождения! Ты из тех людей, кого не делают серийно. Ручная работа, штучный экземпляр.">С днём рождения</button>
+      <button class="chip" type="button" data-t="Ничего не случилось. Просто вспомнилось, как с тобой хорошо.">Просто так</button>
+    </div>
+    <div class="row">
+      <input class="field" id="from" maxlength="24" autocomplete="off" placeholder="Подпись (можно тайно)" aria-label="Подпись">
+      <span id="count">0 / 160</span>
+    </div>
+    <button class="btn main" id="weave" type="button">Вплести</button>
+  </section>
+
+  <section class="panel" id="pShare" hidden>
+    <button class="btn main" id="send" type="button">Отправить</button>
+    <div class="row">
+      <button class="btn" id="copy" type="button">Скопировать</button>
+      <a class="btn" id="vk" target="_blank" rel="noopener">ВКонтакте</a>
+    </div>
+    <div class="row" style="justify-content:center;gap:18px">
+      <a class="ghostlink" id="preview" target="_blank" rel="noopener">Посмотреть, как откроется</a>
+      <button class="ghostlink" id="again" type="button">Вплести другое</button>
+    </div>
+  </section>
+
+  <section class="panel" id="pReveal" hidden>
+    <p class="hint" id="hint"></p>
+    <button class="ghostlink" id="skip" type="button" hidden>Расплести сразу</button>
+  </section>
+
+  <section class="panel" id="pDone" hidden>
+    <button class="btn main" id="reply" type="button">Вплести ответ</button>
+  </section>
+
+  <footer class="foot" id="foot"></footer>
+</main>
+<div id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+'use strict';
+/* Имя и ссылка мастера: только здесь */
+const MASTER = { name: 'Людмила', link: '' };
+const MAX_MSG = 400, PAD = 56, RIM = 16;
+const $ = id => document.getElementById(id);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const coarse = matchMedia('(pointer: coarse)').matches;
+const isOG = new URLSearchParams(location.search).has('og');
+if (isOG) document.documentElement.classList.add('og');
+
+const frame = $('frame'), cv = $('cv'), ctx = cv.getContext('2d');
+const note = $('note'), ta = $('ta'), noteBody = $('noteBody');
+
+/* ---------- ссылка: текст живёт в адресе после #, на сервер не уходит ---------- */
+const CP = (() => {
+  const d = new TextDecoder('windows-1251'), fwd = [], rev = new Map();
+  for (let i = 0; i < 256; i++) { const ch = d.decode(new Uint8Array([i])); fwd[i] = ch; if (!rev.has(ch)) rev.set(ch, i); }
+  return { fwd, rev };
+})();
+const utf8 = s => new TextEncoder().encode(s);
+function keystream(salt) {
+  let x = (Math.imul(salt + 1, 2654435761) ^ 0x9E3779B9) >>> 0;
+  return () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x & 255; };
+}
+function toB64u(u8) {
+  let s = ''; for (const b of u8) s += String.fromCharCode(b);
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function fromB64u(s) {
+  const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from(bin, c => c.charCodeAt(0));
+}
+function pack(msg, from) {
+  const joined = from + '\0' + msg, chars = [...joined];
+  const single = chars.every(ch => CP.rev.has(ch));
+  const body = single ? chars.map(ch => CP.rev.get(ch)) : [...utf8(joined)];
+  const plain = [single ? 0 : 1, ...body];
+  plain.push(plain.reduce((a, b) => (a + b) & 255, 0));
+  const salt = Math.floor(Math.random() * 256), ks = keystream(salt);
+  return toB64u(Uint8Array.from([salt, ...plain.map(b => b ^ ks())]));
+}
+function unpack(code) {
+  try {
+    const raw = fromB64u(code);
+    if (raw.length < 4) return null;
+    const ks = keystream(raw[0]), plain = [...raw.slice(1)].map(b => b ^ ks());
+    const chk = plain.pop();
+    if (plain.reduce((a, b) => (a + b) & 255, 0) !== chk) return null;
+    const mode = plain.shift();
+    if (mode !== 0 && mode !== 1) return null;
+    const joined = mode === 0 ? plain.map(b => CP.fwd[b]).join('') : new TextDecoder().decode(new Uint8Array(plain));
+    const cut = joined.indexOf('\0');
+    if (cut < 0) return null;
+    const clean = s => s.replace(/[\u0000-\u0009\u000B-\u001F\u007F]/g, '');
+    const msg = clean(joined.slice(cut + 1)).slice(0, MAX_MSG).trim();
+    return msg ? { msg, from: clean(joined.slice(0, cut)).slice(0, 40).trim() } : null;
+  } catch (e) { return null; }
+}
+
+/* ---------- звук: прут цепляется за стойки ---------- */
+let ac = null, noise = null, muted = false;
+function unlockAudio() {
+  try {
+    if (!ac) {
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      noise = ac.createBuffer(1, ac.sampleRate * .06, ac.sampleRate);
+      const d = noise.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (ac.state === 'suspended') ac.resume();
+  } catch (e) { ac = null; }
+}
+function tick(delay, vol, freq) {
+  if (!ac || muted) return;
+  const t = ac.currentTime + delay, s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+  s.buffer = noise; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 1.4;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0008, t + .04);
+  s.connect(f); f.connect(g); g.connect(ac.destination); s.start(t); s.stop(t + .06);
+}
+function rodSound() {
+  for (let i = 0; i < 5; i++) tick(i * .05 + Math.random() * .012, .2 * (1 - i * .13), 1500 + Math.random() * 2800);
+  const active = !navigator.userActivation || navigator.userActivation.hasBeenActive;
+  if (navigator.vibrate && !muted && active) { try { navigator.vibrate(7); } catch (e) {} }
+}
+function chord() {
+  if (!ac || muted) return;
+  [392, 523.25, 659.25, 783.99].forEach((hz, i) => {
+    const t = ac.currentTime + i * .1, o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'triangle'; o.frequency.value = hz;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.09, t + .02); g.gain.exponentialRampToValueAtTime(.0005, t + 1.3);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 1.4);
+  });
+}
+$('snd').onclick = () => {
+  muted = !muted; unlockAudio();
+  $('snd').textContent = muted ? '🔇' : '🔊';
+  $('snd').setAttribute('aria-label', muted ? 'Включить звук' : 'Выключить звук');
+};
+
+/* ---------- рисование ---------- */
+const TONES = {
+  honey: { d: '#8f5d28', m: '#cf9a55', l: '#f0cf94' },
+  pale:  { d: '#a67a42', m: '#e3bf85', l: '#fbe9c3' },
+  tea:   { d: '#56331a', m: '#94602e', l: '#c58f52' },
+  warp:  { d: '#6a4220', m: '#b27e41', l: '#deb070' },
+  rim:   { d: '#573516', m: '#b98543', l: '#ecc98a' },
+};
+const clamp01 = v => Math.max(0, Math.min(1, v));
+let dpr = 1, G = null, rimS = null;
+let over = [], wefts = [], overlays = [], warpS = [], rowsS = [];
+let mode = 'write', seed = null, queue = [], lastRel = 0, parts = [], running = false;
+let warpAnim = null, finishAt = 0, lastP = null, touched = false, skipTimer = 0;
+
+function mulberry(a) {
+  return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+function mk(w, h) {
+  const c = document.createElement('canvas');
+  c.width = Math.ceil(w * dpr); c.height = Math.ceil(h * dpr);
+  const x = c.getContext('2d'); x.scale(dpr, dpr);
+  return { c, x, w, h };
+}
+function rr(x, a, b, w, h, r, keep) {
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
+  if (!keep) x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath();
+}
+function strand(x, x0, y0, x1, y1, t) {
+  const g = x.createLinearGradient(x0, y0, x1, y1);
+  g.addColorStop(0, t.d); g.addColorStop(.2, t.m); g.addColorStop(.44, t.l); g.addColorStop(.66, t.m); g.addColorStop(1, t.d);
+  return g;
+}
+function layout() {
+  const W = Math.max(frame.clientWidth, 160), H = Math.max(frame.clientHeight, 190);
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.ceil((W + PAD * 2) * dpr); cv.height = Math.ceil((H + PAD * 2) * dpr);
+  const iw = W - RIM * 2, ih = H - RIM * 2;
+  let cols = Math.round(iw / (isOG ? 48 : 30)); if (cols % 2 === 0) cols++;
+  const rows = Math.round(ih / (isOG ? 32 : 21));
+  const cw = iw / cols, rh = ih / rows;
+  G = { W, H, iw, ih, cols, rows, cw, rh, ww: cw * .62 };
+  rimS = makeRim();
+}
+function makeRim() {
+  const { W, H } = G, m = 8, s = mk(W + m * 2, H + m * 2), x = s.x;
+  x.translate(m, m);
+  const inset = RIM / 2, R = 18, w = W - 2 * inset - 2 * R, h = H - 2 * inset - 2 * R, a = Math.PI * R / 2, P = 2 * (w + h) + 4 * a;
+  rr(x, inset, inset, W - 2 * inset, H - 2 * inset, R);
+  x.save(); x.shadowColor = 'rgba(10,4,0,.7)'; x.shadowBlur = 16; x.shadowOffsetY = 5; x.lineWidth = RIM + 1; x.strokeStyle = '#2e1b0c'; x.stroke(); x.restore();
+  const at = t => {
+    let d = t;
+    if (d < w) return [inset + R + d, inset, 0]; d -= w;
+    if (d < a) { const q = d / R; return [inset + R + w + Math.sin(q) * R, inset + R - Math.cos(q) * R, q, 1]; } d -= a;
+    if (d < h) return [W - inset, inset + R + d, Math.PI / 2]; d -= h;
+    if (d < a) { const q = d / R; return [W - inset - R + Math.cos(q) * R, inset + R + h + Math.sin(q) * R, Math.PI / 2 + q, 1]; } d -= a;
+    if (d < w) return [W - inset - R - d, H - inset, Math.PI]; d -= w;
+    if (d < a) { const q = d / R; return [inset + R - Math.sin(q) * R, H - inset - R + Math.cos(q) * R, Math.PI + q, 1]; } d -= a;
+    if (d < h) return [inset, H - inset - R - d, Math.PI * 1.5]; d -= h;
+    const q = d / R; return [inset + R - Math.cos(q) * R, inset + R - Math.sin(q) * R, Math.PI * 1.5 + q, 1];
+  };
+  const n = Math.round(P / 8.5), L0 = RIM * 1.5, Wd = 8.6;
+  x.save();
+  rr(x, -2.5, -2.5, W + 5, H + 5, R + inset + 2.5);
+  rr(x, RIM + 2.5, RIM + 2.5, W - 2 * RIM - 5, H - 2 * RIM - 5, 3, true);
+  x.clip('evenodd');
+  for (let i = 0; i < n; i++) {
+    const [px, py, ang, arc] = at(i / n * P), L = arc ? L0 * .78 : L0;
+    x.save(); x.translate(px, py); x.rotate(ang + .68);
+    rr(x, -L / 2, -Wd / 2, L, Wd, Wd / 2);
+    x.fillStyle = strand(x, 0, -Wd / 2, 0, Wd / 2, TONES.rim); x.fill();
+    x.lineWidth = .7; x.strokeStyle = 'rgba(38,20,6,.75)'; x.stroke();
+    x.restore();
+  }
+  x.restore();
+  return { ...s, m };
+}
+function buildWeave(bytes) {
+  seed = bytes;
+  const { rows, cols, cw, rh, iw, ih, ww } = G, n = bytes.length || 1, mid = (cols - 1) / 2;
+  const byteAt = i => bytes.length ? bytes[i % n] ^ (i * 37 & 255) : 0;
+  over = [];
+  for (let r = 0; r < rows; r++) {
+    const b = byteAt(r), row = [];
+    for (let c = 0; c < cols; c++) {
+      const m = Math.abs(c - mid), bit = (b >> (m % 8)) & 1;
+      let o = (r + c) % 2 === 0;
+      if (bit && r % 3 !== 2 && m % 2 === 0) o = !o;
+      row.push(o);
+    }
+    over.push(row);
+  }
+  const toneOf = r => {
+    const k = byteAt(Math.min(r, rows - 1 - r)) % 7;
+    return k === 0 ? TONES.tea : k < 3 ? TONES.pale : TONES.honey;
+  };
+  const ext = 10, h = rh + 1.2;
+  wefts = []; overlays = [];
+  for (let r = 0; r < rows; r++) {
+    const rnd = mulberry(r * 7919 + 13 + byteAt(r));
+    const s = mk(iw + ext * 2, h), x = s.x, t = toneOf(r);
+    rr(x, 0, .3, s.w, h - .6, h * .24);
+    x.fillStyle = strand(x, 0, 0, 0, h, t); x.fill();
+    x.save(); x.clip();
+    for (let i = 0; i < 26; i++) {
+      const y = rnd() * h, a = rnd() * s.w;
+      x.strokeStyle = rnd() > .5 ? 'rgba(84,46,14,.22)' : 'rgba(255,240,205,.2)'; x.lineWidth = .5;
+      x.beginPath(); x.moveTo(a, y); x.lineTo(a + 30 + rnd() * 160, y + (rnd() - .5)); x.stroke();
+    }
+    for (let i = 0, k = 1 + Math.floor(rnd() * 2); i < k; i++) {
+      const nx = rnd() * s.w, g = x.createLinearGradient(nx - 5, 0, nx + 5, 0);
+      g.addColorStop(0, 'rgba(70,38,10,0)'); g.addColorStop(.5, 'rgba(70,38,10,.5)'); g.addColorStop(1, 'rgba(70,38,10,0)');
+      x.fillStyle = g; x.fillRect(nx - 5, 0, 10, h);
+    }
+    for (let c = 0; c < cols; c++) {
+      const cx = ext + cw * (c + .5);
+      if (over[r][c]) {
+        const g = x.createRadialGradient(cx, h * .42, 0, cx, h * .42, cw * .6);
+        g.addColorStop(0, 'rgba(255,242,210,.34)'); g.addColorStop(1, 'rgba(255,242,210,0)');
+        x.fillStyle = g; x.fillRect(cx - cw * .7, 0, cw * 1.4, h);
+      } else {
+        const g = x.createLinearGradient(cx - cw * .64, 0, cx + cw * .64, 0);
+        g.addColorStop(0, 'rgba(26,12,3,0)'); g.addColorStop(.5, 'rgba(26,12,3,.6)'); g.addColorStop(1, 'rgba(26,12,3,0)');
+        x.fillStyle = g; x.fillRect(cx - cw * .64, 0, cw * 1.28, h);
+      }
+    }
+    x.restore();
+    x.fillStyle = 'rgba(24,11,3,.6)'; x.fillRect(0, h - .9, s.w, .9);
+    wefts.push({ ...s, ext });
+
+    const o = mk(iw, h), ox = o.x;
+    for (let c = 0; c < cols; c++) {
+      if (over[r][c]) continue;
+      const px = cw * (c + .5) - ww / 2;
+      for (const [a, b, sign] of [[px - 5, px, 1], [px + ww, px + ww + 5, -1]]) {
+        const g = ox.createLinearGradient(a, 0, b, 0);
+        g.addColorStop(sign > 0 ? 0 : 1, 'rgba(24,11,3,0)'); g.addColorStop(sign > 0 ? 1 : 0, 'rgba(24,11,3,.5)');
+        ox.fillStyle = g; ox.fillRect(a, 0, 5, h);
+      }
+      ox.fillStyle = strand(ox, px, 0, px + ww, 0, TONES.warp); rr(ox, px, -3, ww, h + 6, ww * .2); ox.fill();
+      ox.lineWidth = .5;
+      for (let i = 0; i < 5; i++) {
+        const fx = px + rnd() * ww; ox.strokeStyle = rnd() > .5 ? 'rgba(70,38,10,.24)' : 'rgba(255,240,205,.18)';
+        ox.beginPath(); ox.moveTo(fx, 0); ox.lineTo(fx, h); ox.stroke();
+      }
+      const g = ox.createLinearGradient(0, 0, 0, h);
+      g.addColorStop(0, 'rgba(22,10,2,.55)'); g.addColorStop(.3, 'rgba(22,10,2,0)'); g.addColorStop(.5, 'rgba(255,240,205,.2)'); g.addColorStop(.7, 'rgba(22,10,2,0)'); g.addColorStop(1, 'rgba(22,10,2,.55)');
+      ox.fillStyle = g; ox.fillRect(px, 0, ww, h);
+    }
+    overlays.push(o);
+  }
+  warpS = [];
+  for (let c = 0; c < cols; c++) {
+    const rnd = mulberry(c * 104729 + 5), s = mk(ww + 12, ih + 24), x = s.x, px = 6;
+    x.save(); x.shadowColor = 'rgba(30,14,3,.5)'; x.shadowBlur = 5;
+    x.fillStyle = strand(x, px, 0, px + ww, 0, TONES.warp); rr(x, px, 0, ww, s.h, ww * .2); x.fill(); x.restore();
+    x.lineWidth = .5;
+    for (let i = 0; i < 26; i++) {
+      const fx = px + rnd() * ww, a = rnd() * s.h; x.strokeStyle = rnd() > .5 ? 'rgba(70,38,10,.24)' : 'rgba(255,240,205,.18)';
+      x.beginPath(); x.moveTo(fx, a); x.lineTo(fx, a + 40 + rnd() * 120); x.stroke();
+    }
+    warpS.push(s);
+  }
+}
+function initRows(state) {
+  rowsS = Array.from({ length: G.rows }, () => ({ st: state, t0: 0, dir: 1, sounded: true }));
+}
+const DUR_OUT = reduce ? 130 : 470, DUR_IN = reduce ? 100 : 360, WARP_D = reduce ? 120 : 560;
+function warpOff(c, now) {
+  if (!warpAnim) return 0;
+  const { t0, type } = warpAnim, mid = (G.cols - 1) / 2;
+  const p = clamp01((now - t0 - Math.abs(c - mid) * 16) / WARP_D), sign = c % 2 ? 1 : -1;
+  return (type === 'in' ? Math.pow(1 - p, 3) : p * p) * sign * (G.ih + 28);
+}
+function warpsVisible() { return !(mode === 'write' || mode === 'done'); }
+function render(now) {
+  const { W, H, iw, ih, cols, rows, cw, rh, ww } = G;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W + PAD * 2, H + PAD * 2);
+  ctx.translate(PAD, PAD);
+  const live = warpsVisible() && wefts.length === rows;
+  if (live) {
+    ctx.save(); ctx.beginPath(); ctx.rect(RIM, RIM, iw, ih); ctx.clip();
+    for (let c = 0; c < cols; c++) {
+      const s = warpS[c];
+      ctx.drawImage(s.c, RIM + cw * (c + .5) - ww / 2 - 6, RIM - 12 + warpOff(c, now), s.w, s.h);
+    }
+    ctx.restore();
+    const nudge = (mode === 'reveal' && !touched && !reduce) ? Math.max(0, Math.sin(now / 340)) * 5 : 0;
+    ctx.save(); ctx.beginPath(); ctx.rect(RIM - 2, RIM, iw + 4, ih); ctx.clip();
+    for (let r = 0; r < rows; r++) {
+      if (rowsS[r].st !== 'idle') continue;
+      const s = wefts[r], y = RIM + r * rh;
+      ctx.drawImage(s.c, RIM - s.ext + (r < 3 ? nudge * (r % 2 ? 1 : -1) : 0), y, s.w, s.h);
+      ctx.drawImage(overlays[r].c, RIM, y, overlays[r].w, overlays[r].h);
+    }
+    ctx.restore();
+  }
+  ctx.drawImage(rimS.c, -rimS.m, -rimS.m, rimS.w, rimS.h);
+  if (live) {
+    for (let r = 0; r < rows; r++) {
+      const R = rowsS[r], s = wefts[r], y = RIM + r * rh;
+      if (R.st !== 'out' && R.st !== 'in') continue;
+      if (now < R.t0) continue;
+      const far = (iw + PAD * 1.3);
+      let dx, wob = 0, alpha = 1;
+      if (R.st === 'out') {
+        const p = clamp01((now - R.t0) / DUR_OUT);
+        dx = R.dir * far * Math.pow(p, 2.1); wob = Math.sin(p * 9) * 1.6 * p; alpha = p > .72 ? 1 - (p - .72) / .28 : 1;
+      } else {
+        const p = clamp01((now - R.t0) / DUR_IN);
+        dx = R.dir * far * Math.pow(1 - p, 3); alpha = Math.min(1, p * 4);
+      }
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(s.c, RIM - s.ext + dx, y + wob, s.w, s.h);
+      ctx.globalAlpha = 1;
+      ctx.save(); ctx.beginPath(); ctx.rect(RIM, y - 1, iw, rh + 3); ctx.clip();
+      ctx.drawImage(overlays[r].c, RIM, y, overlays[r].w, overlays[r].h);
+      ctx.restore();
+    }
+  }
+  ctx.lineCap = 'round';
+  for (const p of parts) {
+    ctx.save(); ctx.globalAlpha = clamp01(p.life * 2); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+    ctx.strokeStyle = p.c; ctx.lineWidth = p.w; ctx.beginPath(); ctx.moveTo(-p.len / 2, 0); ctx.lineTo(p.len / 2, 0); ctx.stroke(); ctx.restore();
+  }
+}
+function spawnBits(r, xAt) {
+  if (reduce || parts.length > 130) return;
+  const y = RIM + (r + .5) * G.rh;
+  for (let i = 0; i < 3; i++) parts.push({
+    x: xAt + (Math.random() - .5) * 60, y, vx: (Math.random() - .5) * 1.8, vy: -Math.random() * 1.6,
+    rot: Math.random() * 3.14, vr: (Math.random() - .5) * .28, len: 5 + Math.random() * 11, w: .8 + Math.random() * 1.1,
+    c: ['#e7c48a', '#cf9a55', '#94602e'][i], life: 1,
+  });
+}
+function kick() { if (!running) { running = true; requestAnimationFrame(loop); } }
+function loop(now) {
+  if (mode === 'reveal' && queue.length && now - lastRel >= 44) {
+    const q = queue.shift(), R = rowsS[q.r];
+    if (R && R.st === 'idle') {
+      R.st = 'out'; R.t0 = now; R.dir = q.dir; lastRel = now;
+      rodSound(); spawnBits(q.r, q.x);
+    }
+  }
+  let anyMoving = false, allGone = rowsS.length > 0, allIdle = rowsS.length > 0;
+  for (const R of rowsS) {
+    if (R.st === 'out' && now - R.t0 >= DUR_OUT) R.st = 'gone';
+    if (R.st === 'in') {
+      if (!R.sounded && now >= R.t0) { R.sounded = true; rodSound(); }
+      if (now - R.t0 >= DUR_IN) R.st = 'idle';
+    }
+    if (R.st === 'in' || R.st === 'out') anyMoving = true;
+    if (R.st !== 'gone') allGone = false;
+    if (R.st !== 'idle') allIdle = false;
+  }
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i];
+    p.vy += .16; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= .016;
+    if (p.life <= 0 || p.y > G.H + PAD) parts.splice(i, 1);
+  }
+  if (mode === 'reveal' && allGone && !warpAnim) warpAnim = { t0: now + 240, type: 'out' };
+  if (mode === 'reveal' && warpAnim && now >= warpAnim.t0 + WARP_D + (G.cols / 2) * 16) finishReveal();
+  if (mode === 'weaving' && allIdle) finishWeave();
+  render(now);
+  const keep = mode === 'reveal' || mode === 'weaving' || anyMoving || parts.length > 0;
+  if (keep) requestAnimationFrame(loop); else running = false;
+}
+function burstFinal() {
+  if (reduce) return;
+  for (let i = 0; i < 46; i++) parts.push({
+    x: RIM + Math.random() * G.iw, y: RIM + Math.random() * G.ih * .3, vx: (Math.random() - .5) * 4, vy: -2 - Math.random() * 4,
+    rot: Math.random() * 3.14, vr: (Math.random() - .5) * .3, len: 6 + Math.random() * 14, w: 1 + Math.random() * 1.2,
+    c: ['#f0cf94', '#cf9a55', '#94602e'][i % 3], life: 1.5,
+  });
+}
+
+/* ---------- записка ---------- */
+function fitNote() {
+  if (noteBody.hidden) return;
+  const inner = $('noteInner');
+  for (let fs = 50; fs >= 16; fs -= 2) {
+    noteBody.style.fontSize = fs + 'px';
+    if (inner.offsetHeight <= noteBody.clientHeight - 36) break;
+  }
+}
+function setNote(msg, from) {
+  ta.hidden = true; noteBody.hidden = false;
+  $('noteText').textContent = msg;
+  $('noteFrom').textContent = from ? from : '';
+  $('noteFrom').hidden = !from;
+  fitNote();
+}
+function setHead(e, t, s) { $('eyebrow').textContent = e; $('title').textContent = t; $('sub').textContent = s || ''; $('sub').hidden = !s; }
+function panel(name) { for (const p of ['pWrite', 'pShare', 'pReveal', 'pDone']) $(p).hidden = p !== name; }
+function toast(t) { const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2600); }
+
+/* ---------- экраны ---------- */
+function showWrite(warn) {
+  mode = 'write'; queue = []; warpAnim = null; wefts = []; rowsS = []; parts = [];
+  clearTimeout(skipTimer);
+  cv.classList.remove('live'); $('ghost').hidden = true; note.classList.remove('open'); note.removeAttribute('aria-hidden');
+  ta.hidden = false; noteBody.hidden = true; ta.value = ''; $('from').value = ''; updCount();
+  setHead('Тайное послание', 'Вплети слова в ротанг', warn || 'Получатель увидит только плетение. Чтобы прочитать, придётся расплести его пальцем.');
+  panel('pWrite');
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  render(performance.now());
+}
+let link = '';
+function startWeave() {
+  const msg = ta.value.trim(), from = $('from').value.trim();
+  if (!msg) { frame.classList.remove('shake'); void frame.offsetWidth; frame.classList.add('shake'); ta.focus(); return; }
+  unlockAudio();
+  ta.blur(); $('from').blur();
+  link = location.origin + location.pathname + '#p=' + pack(msg, from);
+  setNote(msg, from);
+  buildWeave([...utf8(msg)]);
+  const now = performance.now(), start = now + (reduce ? 60 : 420);
+  initRows('in');
+  rowsS.forEach((R, r) => { R.t0 = start + r * (reduce ? 8 : 62); R.dir = r % 2 ? 1 : -1; R.sounded = false; });
+  warpAnim = { t0: now, type: 'in' };
+  mode = 'weaving';
+  panel('');
+  setHead('Тайное послание', 'Вплетаем…', '');
+  kick();
+}
+function finishWeave() {
+  mode = 'woven'; warpAnim = null; chord();
+  setHead('Готово', 'Слова вплетены', 'Отправь ссылку тому, кому это написано.');
+  $('vk').href = 'https://vk.com/share.php?url=' + encodeURIComponent(link);
+  $('preview').href = link;
+  $('send').hidden = !navigator.share;
+  $('copy').classList.toggle('main', !navigator.share);
+  panel('pShare');
+}
+function startReveal(d) {
+  mode = 'reveal'; touched = false; queue = []; warpAnim = null; lastP = null; parts = [];
+  note.setAttribute('aria-hidden', 'true'); note.classList.remove('open');
+  setNote(d.msg, d.from);
+  buildWeave([...utf8(d.msg)]);
+  initRows('idle');
+  cv.classList.add('live');
+  $('ghost').hidden = false;
+  setHead('Тебе вплели послание', d.from ? 'От: ' + d.from : 'Без подписи', '');
+  $('hint').textContent = coarse ? 'Проведи пальцем по плетению, и прутья начнут выскальзывать' : 'Зажми мышку и веди по плетению, и прутья начнут выскальзывать';
+  $('skip').hidden = true;
+  panel('pReveal');
+  skipTimer = setTimeout(() => { if (mode === 'reveal') $('skip').hidden = false; }, 6000);
+  kick();
+}
+function finishReveal() {
+  mode = 'done'; warpAnim = null; wefts = []; rowsS = [];
+  clearTimeout(skipTimer);
+  cv.classList.remove('live'); $('ghost').hidden = true;
+  note.removeAttribute('aria-hidden'); note.classList.add('open');
+  chord(); burstFinal();
+  setHead('Расплетено', 'Послание открыто', 'Теперь можно ответить тем же.');
+  panel('pDone');
+}
+
+/* ---------- расплетание ---------- */
+function posOf(e) {
+  const b = cv.getBoundingClientRect();
+  return { x: e.clientX - b.left - PAD, y: e.clientY - b.top - PAD };
+}
+const rowAt = y => Math.floor((y - RIM) / G.rh);
+function release(r, dir, x) {
+  if (r < 0 || r >= G.rows || rowsS[r].st !== 'idle' || queue.some(q => q.r === r)) return;
+  queue.push({ r, dir, x });
+  if (!touched) { touched = true; $('ghost').hidden = true; clearTimeout(skipTimer); }
+}
+function moved(p) {
+  if (!lastP) { lastP = p; return; }
+  const dx = p.x - lastP.x, dy = p.y - lastP.y;
+  if (Math.hypot(dx, dy) < 3) return;
+  const a = rowAt(lastP.y), b = rowAt(p.y);
+  const inside = p.x > -10 && p.x < G.W + 10;
+  if (inside) for (let r = Math.min(a, b); r <= Math.max(a, b); r++) {
+    release(r, Math.abs(dx) > 2 ? Math.sign(dx) : (r % 2 ? 1 : -1), p.x);
+  }
+  lastP = p;
+}
+cv.addEventListener('pointerdown', e => { if (mode !== 'reveal') return; unlockAudio(); lastP = posOf(e); try { cv.setPointerCapture(e.pointerId); } catch (_) {} e.preventDefault(); });
+cv.addEventListener('pointermove', e => { if (mode === 'reveal' && e.buttons !== 0) moved(posOf(e)); });
+for (const t of ['pointerup', 'pointercancel']) cv.addEventListener(t, () => { lastP = null; });
+$('skip').onclick = () => { unlockAudio(); for (let r = 0; r < G.rows; r++) release(r, r % 2 ? 1 : -1, G.W / 2); };
+
+/* ---------- кнопки ---------- */
+function updCount() { $('count').textContent = ta.value.length + ' / 160'; }
+ta.addEventListener('input', updCount);
+for (const c of document.querySelectorAll('.chip')) c.onclick = () => { ta.value = c.dataset.t; updCount(); };
+$('weave').onclick = startWeave;
+async function copyLink() {
+  try { await navigator.clipboard.writeText(link); }
+  catch (e) {
+    const t = document.createElement('textarea'); t.value = link; document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    t.remove();
+  }
+  toast('Ссылка скопирована');
+}
+$('copy').onclick = copyLink;
+$('send').onclick = async () => {
+  if (navigator.share) { try { await navigator.share({ title: 'Тебе вплели тайное послание', url: link }); } catch (e) {} }
+  else copyLink();
+};
+$('again').onclick = () => showWrite();
+$('reply').onclick = () => showWrite();
+
+const foot = $('foot');
+if (MASTER.link) {
+  foot.append('Настоящий ротанг плетёт ');
+  const a = document.createElement('a'); a.href = MASTER.link; a.textContent = 'мастер ' + MASTER.name; a.target = '_blank'; a.rel = 'noopener'; foot.append(a);
+} else foot.textContent = 'Настоящий ротанг плетёт мастер ' + MASTER.name;
+
+/* ---------- старт ---------- */
+function route() {
+  const m = location.hash.match(/^#p=([\w-]+)$/);
+  if (m) {
+    const d = unpack(m[1]);
+    if (d) { startReveal(d); return; }
+    showWrite('Ссылка обрезалась, послание не прочитать. Попроси прислать её целиком.');
+    return;
+  }
+  showWrite();
+}
+layout();
+if (isOG) {
+  ta.hidden = true; mode = 'og';
+  buildWeave([...utf8('С Новым годом! Тайное послание в ротанге')]);
+  initRows('idle');
+  const go = () => render(performance.now());
+  go(); document.fonts.ready.then(go);
+  return;
+}
+route();
+window.addEventListener('hashchange', route);
+document.fonts && document.fonts.ready.then(fitNote);
+let rt = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(rt);
+  rt = setTimeout(() => {
+    if (frame.clientWidth === G.W && frame.clientHeight === G.H) return;
+    const oldRows = G.rows, wasSeed = seed, hadWeave = wefts.length > 0;
+    layout();
+    if (hadWeave && wasSeed) {
+      buildWeave(wasSeed);
+      if (G.rows !== oldRows) initRows('idle');
+    }
+    fitNote();
+    render(performance.now());
+  }, 120);
+});
+})();
+</script>
+</body>
+</html>
